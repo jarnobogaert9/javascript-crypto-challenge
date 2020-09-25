@@ -4,7 +4,7 @@ module.exports = async () => {
     const sodium = _sodium;
     return {
         verify: (hash, pwd) => {
-            return sodium.crypto_pwhash_str_verify(hash, pwd);            
+            return sodium.crypto_pwhash_str_verify(hash, pwd);       
         }
     }
 }
