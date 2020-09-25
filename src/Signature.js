@@ -11,7 +11,7 @@ module.exports = async () => {
     console.log(publicKey, privateKey);
     return {
         verifyingKey: publicKey,
-        sign(msg) {
+        sign: () => {
             return sodium.crypto_sign(msg, privateKey);
         }
     }
