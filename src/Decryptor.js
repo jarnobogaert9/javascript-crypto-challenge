@@ -9,7 +9,7 @@ module.exports = async (key) => {
     return {
         decrypt: (ciphertext, nonce) => {
             if (!ciphertext || !nonce) {
-                throw new Error('Either one of the arguments is undefined.');
+                throw new Error('There are 2 arguments required.');
             }
             return sodium.crypto_secretbox_open_easy(ciphertext, nonce, key);
         }
