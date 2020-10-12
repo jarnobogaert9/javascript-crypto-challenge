@@ -24,15 +24,22 @@ module.exports = async (peer) => {
             return sodium.crypto_secretbox_open_easy(cipher, nonce, rx);
         },
         send(msg) {
-            
+            const encrypted = this.encrypt(msg);
+            otherPeer.setMsg(encrypted);
         },
         receive() {
-            
+            return this.decrypt(msg.ciphertext, msg.nonce);
         },
         generateSharedKeys(key) {
             const {sharedRx, sharedTx} = sodium.crypto_kx_server_session_keys(publicKey, privateKey, key);
             rx = sharedRx;
             tx = sharedTx;
+        },
+        setMsg(incomingMsg) {
+            msg = incomingMsg;
+        },
+        setOtherPeer(peer) {
+            otherPeer = peer;
         }
     });
 
@@ -43,6 +50,10 @@ module.exports = async (peer) => {
         tx = pair.sharedTx;
         // Generate shared keys in the server
         peer.generateSharedKeys(obj.publicKey);
+        // Make the server peer aware of the client peer
+        peer.setOtherPeer(obj);
+        // Make client peer aware of server peer
+        obj.setOtherPeer(peer);
     }
     
 
