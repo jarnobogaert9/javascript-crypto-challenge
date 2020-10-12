@@ -1,5 +1,6 @@
 const _sodium = require('libsodium-wrappers');
 const Decryptor = require('./Decryptor');
+const Encryptor = require('./Encryptor');
 module.exports = async (peer) => {
     await _sodium.ready;
     const sodium = _sodium;
@@ -9,19 +10,16 @@ module.exports = async (peer) => {
     let tx = undefined;
     let otherPeer = undefined;
     let msg = undefined;
+    let decryptor = undefined;
+    let encryptor = undefined;
     
     let obj = Object.freeze({
         publicKey: publicKey,
         encrypt(msg) {
-            const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
-            const ciphertext = sodium.crypto_secretbox_easy(msg, nonce, tx);
-            return {
-                nonce: nonce,
-                ciphertext: ciphertext
-            }
+            return encryptor.encrypt(msg);
         },
         decrypt(cipher, nonce) {
-            return sodium.crypto_secretbox_open_easy(cipher, nonce, rx);
+            return decryptor.decrypt(cipher, nonce);
         },
         send(msg) {
             const encrypted = this.encrypt(msg);
@@ -40,6 +38,12 @@ module.exports = async (peer) => {
         },
         setOtherPeer(peer) {
             otherPeer = peer;
+        },
+        async setDecryptor() {
+            decryptor = await Decryptor(rx);
+        },
+        async setEncryptor() {
+            encryptor = await Encryptor(tx);
         }
     });
 
@@ -54,6 +58,24 @@ module.exports = async (peer) => {
         peer.setOtherPeer(obj);
         // Make client peer aware of server peer
         obj.setOtherPeer(peer);
+
+        /**
+         * Decryptor initializers
+         */
+        // Initialize decryptor in the server
+        await peer.setDecryptor();
+
+        // Initialize decryptor in the client
+        await obj.setDecryptor();
+
+        /**
+         * Encryptor initializers
+         */
+        // Initialize encryptor in the server
+        await peer.setEncryptor();
+        // Initialize encryptor in the client
+        await obj.setEncryptor();
+
     }
     
 
