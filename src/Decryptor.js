@@ -4,7 +4,7 @@ module.exports = async (key) => {
     await _sodium.ready;
     const sodium = _sodium;
     if (!key) {
-        throw "no key";
+        throw 'no key';
     }
     return Object.freeze({
         decrypt: (ciphertext, nonce) => {
