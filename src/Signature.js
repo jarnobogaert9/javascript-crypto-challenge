@@ -9,10 +9,10 @@ module.exports = async () => {
      */
     const { publicKey, privateKey } = sodium.crypto_sign_keypair();
     console.log(publicKey, privateKey);
-    return {
+    return Object.freeze({
         verifyingKey: publicKey,
         sign: (msg) => {
             return sodium.crypto_sign(msg, privateKey);
         }
-    }
+    });
 }
