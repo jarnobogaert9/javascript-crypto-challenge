@@ -8,7 +8,7 @@ module.exports = async () => {
      * 2. privateKey Uint8Array 64 -> used to sign message
      */
     const { publicKey, privateKey } = sodium.crypto_sign_keypair();
-    console.log(publicKey, privateKey);
+    
     return Object.freeze({
         verifyingKey: publicKey,
         sign: (msg) => {
