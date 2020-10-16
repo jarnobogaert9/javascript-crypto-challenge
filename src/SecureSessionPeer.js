@@ -12,7 +12,7 @@ module.exports = async (peer) => {
     let msg = undefined;
     let decryptor = undefined;
     let encryptor = undefined;
-    
+
     let obj = Object.freeze({
         publicKey: publicKey,
         encrypt(msg) {
@@ -29,7 +29,7 @@ module.exports = async (peer) => {
             return this.decrypt(msg.ciphertext, msg.nonce);
         },
         generateSharedKeys(key) {
-            const {sharedRx, sharedTx} = sodium.crypto_kx_server_session_keys(publicKey, privateKey, key);
+            const { sharedRx, sharedTx } = sodium.crypto_kx_server_session_keys(publicKey, privateKey, key);
             rx = sharedRx;
             tx = sharedTx;
         },
@@ -47,11 +47,11 @@ module.exports = async (peer) => {
         }
     });
 
-    
+
     if (peer) {
-        let pair = sodium.crypto_kx_client_session_keys(publicKey, privateKey, peer.publicKey);
-        rx = pair.sharedRx;
-        tx = pair.sharedTx;
+        const { sharedRx, sharedTx } = sodium.crypto_kx_client_session_keys(publicKey, privateKey, peer.publicKey);
+        rx = sharedRx;
+        tx = sharedTx;
         // Generate shared keys in the server
         peer.generateSharedKeys(obj.publicKey);
         // Make the server peer aware of the client peer
@@ -77,7 +77,7 @@ module.exports = async (peer) => {
         await obj.setEncryptor();
 
     }
-    
+
 
     return obj;
 }
